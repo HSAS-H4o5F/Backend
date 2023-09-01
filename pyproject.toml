@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "h4o5f-backend"
+version = "0.1.0"
+description = "Backend"
+authors = ["xfqwdsj <xfqwdsj@qq.com>"]
+license = "GPL-3.0"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+opencv-contrib-python = "^4.8.0.76"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
