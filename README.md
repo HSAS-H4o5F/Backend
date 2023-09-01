@@ -15,19 +15,21 @@
 从 [Python 下载页](https://www.python.org/downloads/)
 或安装 [Anaconda](https://www.anaconda.com/download/)。
 
+### 安装 Poetry
+
+参考 [Poetry 官网](https://python-poetry.org/docs/#installation)。
+
 ### 安装 npm 依赖
 
 ```shell
 npm install
 ```
 
-### 安装 PyPI 依赖
+### 安装 Poetry 依赖
 
-从 [env.yaml](env.yaml) 中获取依赖列表，使用 pip 安装。
-
-或直接使用 Anaconda 导入 [env.yaml](env.yaml)。
-
-**TODO**：本项目可能在将来迁移到其他依赖管理方法。
+```shell
+poetry install
+```
 
 ### 运行
 
