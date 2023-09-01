@@ -17,12 +17,15 @@ while True:
     if len(result) == 0:
         sys.stdout.buffer.write(bytes([0]))
         sys.stdout.buffer.flush()
-    else:
+    elif len(result) == 1:
         x, y, w, h = result[0]
         sys.stdout.buffer.write(bytes([x, y, w, h]))
         sys.stdout.buffer.flush()
 
         cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
+    else:
+        sys.stdout.buffer.write(bytes([1]))
+        sys.stdout.buffer.flush()
 
     cv2.imshow('frame', frame)
     cv2.waitKey(1)
