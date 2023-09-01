@@ -19,10 +19,15 @@ while True:
         sys.stdout.buffer.flush()
     elif len(result) == 1:
         x, y, w, h = result[0]
-        sys.stdout.buffer.write(bytes([x, y, w, h]))
-        sys.stdout.buffer.flush()
 
-        cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
+        if w * h < 0.5 * size * size:
+            sys.stdout.buffer.write(bytes([2]))
+            sys.stdout.buffer.flush()
+        else:
+            sys.stdout.buffer.write(bytes([x, y, w, h]))
+            sys.stdout.buffer.flush()
+
+            cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
     else:
         sys.stdout.buffer.write(bytes([1]))
         sys.stdout.buffer.flush()
