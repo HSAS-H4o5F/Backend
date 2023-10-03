@@ -16,7 +16,7 @@
     "typescript-json-schema": "^0.61.0"
   },
   "devDependencies": {
-    "@types/accept-language-parser": "^1.5.3",
+    "@types/accept-language-parser": "^1.5.4",
     "@types/cors": "^2.8.14"
   },
   "scripts": {
