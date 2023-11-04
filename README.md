@@ -34,5 +34,6 @@ poetry install
 ### 运行
 
 ```shell
+poetry shell
 npm start
 ```
