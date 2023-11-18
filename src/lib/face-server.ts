@@ -1,15 +1,14 @@
-import { Server } from "socket.io";
+import { Server, Socket } from "socket.io";
 import { PythonPath as pythonPath, server } from "../app.js";
 import { pick } from "accept-language-parser";
-import { PythonShell, Options } from "python-shell";
+import { Options, PythonShell } from "python-shell";
 import { resolve } from "path";
 import { EOL } from "os";
 
 const version = "1";
 
 const pyShellOptions: Options = {
-  mode: "binary",
-  pythonOptions: ["-u"],
+  mode: "binary", pythonOptions: ["-u"],
 };
 
 export function startFaceServer() {
@@ -20,17 +19,9 @@ export function startFaceServer() {
   const facePath = resolve(pythonPath, "face");
 
   io.on("connection", (socket) => {
-    const language =
-      pick(
-        Object.values(SupportedLanguage),
-        socket.request.headers["accept-language"] ?? "zh",
-        { loose: true }
-      ) ?? SupportedLanguage.ZH;
+    const language = pick(Object.values(SupportedLanguage), socket.request.headers["accept-language"] ?? "zh", { loose: true }) ?? SupportedLanguage.ZH;
 
-    console.log(
-      `A client from ${socket.request.headers["cf-connecting-ip"]} connected Face Server ` +
-        `through ${socket.conn.remoteAddress}, id: ${socket.id}, requesting language: ${language}.`
-    );
+    console.log(`A client from ${socket.request.headers["cf-connecting-ip"]} connected Face Server ` + `through ${socket.conn.remoteAddress}, id: ${socket.id}, requesting language: ${language}.`);
 
     const requestedVersion = socket.request.headers[RequestHeader.API_VERSION];
 
@@ -49,9 +40,7 @@ export function startFaceServer() {
 
     socket.on(Event.REQUEST, (data: FaceRequest) => {
       if (typeof data != "object") {
-        console.log(
-          `${socket.id} sent invalid type of request: ${typeof data}.`
-        );
+        console.log(`${socket.id} sent invalid type of request: ${typeof data}.`);
         socket.emit(Event.ERROR, Error.TYPE_ERROR.localize(language));
         return;
       }
@@ -64,15 +53,10 @@ export function startFaceServer() {
 
       switch (data.operation) {
         case "detection":
-          py = new PythonShell(
-            resolve(facePath, "detection.py"),
-            pyShellOptions
-          );
+          py = new PythonShell(resolve(facePath, "detection.py"), pyShellOptions);
 
           py.stdin.on("error", (err) => {
-            console.error(
-              `Error writing data of client ${socket.id}.\n  ${err}`
-            );
+            console.error(`Error writing data of client ${socket.id}.\n  ${err}`);
           });
 
           py.stdout.on("data", (data) => {
@@ -81,33 +65,22 @@ export function startFaceServer() {
           });
 
           py.stderr.on("data", (data) => {
-            console.error(
-              `Client ${socket.id} got detection error from stderr event data.\n  ${data}`
-            );
+            console.error(`Client ${socket.id} got detection error from stderr event data.\n  ${data}`);
             socket.emit(Event.ERROR, data);
           });
 
           py.on("error", (err) => {
-            console.error(
-              `Client ${socket.id} got detection error from event error.\n  ${err}`
-            );
+            console.error(`Client ${socket.id} got detection error from event error.\n  ${err}`);
             socket.emit(Event.ERROR, err);
           });
 
-          py.on("pythonError", (err) => {
-            console.error(
-              `Client ${socket.id} got detection error from event pythonError.\n  ${err}`
-            );
-            socket.emit(Event.ERROR, err);
-          });
+          py.on("pythonError", (err) => responseError(socket, data.operation, "pythonError", err));
 
           console.log(`Client ${socket.id} is ready to detect faces.`);
           socket.emit(Event.SUCCESS);
           break;
         default:
-          console.log(
-            `Client ${socket.id} sent invalid operation: ${data.operation}.`
-          );
+          console.log(`Client ${socket.id} sent invalid operation: ${data.operation}.`);
           socket.emit(Event.ERROR, Error.INVALID_REQUEST.localize(language));
           break;
       }
@@ -120,19 +93,13 @@ export function startFaceServer() {
 
     socket.on(Event.DETECTION, (data) => {
       if (py == null) {
-        console.log(
-          `Client ${socket.id} sent detection data without a detection process.`
-        );
+        console.log(`Client ${socket.id} sent detection data without a detection process.`);
         socket.emit(Event.ERROR, Error.INVALID_REQUEST.localize(language));
         return;
       }
 
       if (!(data instanceof Buffer)) {
-        console.log(
-          `Client ${
-            socket.id
-          } sent invalid type of detection data: ${typeof data}.`
-        );
+        console.log(`Client ${socket.id} sent invalid type of detection data: ${typeof data}.`);
         socket.emit(Event.ERROR, Error.TYPE_ERROR.localize(language));
         return;
       }
@@ -144,10 +111,12 @@ export function startFaceServer() {
   });
 }
 
-function parseEnumKey<E extends { [index: string]: V }, V>(
-  enumObject: E,
-  enumValue: V
-) {
+function responseError(socket: Socket, operation: string, event: string, error: any) {
+  console.error(`Client ${socket.id} got ${operation} error from event ${event}.\n  ${error}`);
+  socket.emit(Event.ERROR, error);
+}
+
+function parseEnumKey<E extends { [index: string]: V }, V>(enumObject: E, enumValue: V) {
   let keys = Object.keys(enumObject).filter((x) => enumObject[x] == enumValue);
   return keys.length > 0 ? keys[0] : null;
 }
@@ -157,22 +126,15 @@ enum RequestHeader {
 }
 
 enum SupportedLanguage {
-  ZH = "zh",
-  EN = "en",
+  ZH = "zh", EN = "en",
 }
 
 enum Event {
-  REQUEST = "request",
-  SUCCESS = "success",
-  ERROR = "error",
-  DETECTION = "detection",
-  CLOSE = "close",
+  REQUEST = "request", SUCCESS = "success", ERROR = "error", DETECTION = "detection", CLOSE = "close",
 }
 
 type FaceRequest = {
-  operation: "detection" | "registration" | "recognition";
-  width: number;
-  height: number;
+  operation: "detection" | "registration" | "recognition"; width: number; height: number;
 };
 
 type OutgoingMessage = {
@@ -180,36 +142,26 @@ type OutgoingMessage = {
 };
 
 class Error {
-  private constructor(
-    public readonly code: number,
-    public readonly message: OutgoingMessage
-  ) {}
-
   static readonly TYPE_ERROR = new Error(0x00, {
-    [SupportedLanguage.ZH]: "无效的数据类型",
-    [SupportedLanguage.EN]: "Invalid data type",
+    [SupportedLanguage.ZH]: "无效的数据类型", [SupportedLanguage.EN]: "Invalid data type",
   });
-
   static readonly MULTIPLE_REQUESTS = new Error(0x01, {
     [SupportedLanguage.ZH]: "重复的请求：正在进行另一操作",
-    [SupportedLanguage.EN]:
-      "Multiple requests: another operation is in progress",
+    [SupportedLanguage.EN]: "Multiple requests: another operation is in progress",
   });
-
   static readonly INVALID_REQUEST = new Error(0x02, {
-    [SupportedLanguage.ZH]: "无效的请求",
-    [SupportedLanguage.EN]: "Invalid request",
+    [SupportedLanguage.ZH]: "无效的请求", [SupportedLanguage.EN]: "Invalid request",
+  });
+  static readonly API_VERSION_MISMATCH = new Error(0x03, {
+    [SupportedLanguage.ZH]: "API 版本不匹配", [SupportedLanguage.EN]: "API version mismatch",
   });
 
-  static readonly API_VERSION_MISMATCH = new Error(0x03, {
-    [SupportedLanguage.ZH]: "API 版本不匹配",
-    [SupportedLanguage.EN]: "API version mismatch",
-  });
+  private constructor(public readonly code: number, public readonly message: OutgoingMessage) {
+  }
 
   localize(language: SupportedLanguage) {
     return {
-      code: this.code,
-      message: this.message[language],
+      code: this.code, message: this.message[language],
     };
   }
 }
