@@ -8,7 +8,9 @@ import { EOL } from "os";
 const version = "1";
 
 const pyShellOptions: Options = {
-  mode: "binary", pythonOptions: ["-u"],
+  mode: "binary", pythonOptions: ["-u"], env: {
+    ...process.env, "TF_CPP_MIN_LOG_LEVEL": "2",
+  },
 };
 
 export function startFaceServer() {

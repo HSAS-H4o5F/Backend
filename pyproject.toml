@@ -1,16 +1,22 @@
-[tool.poetry]
+[project]
 name = "h4o5f-backend"
 version = "0.1.0"
 description = "Backend"
-authors = ["xfqwdsj <xfqwdsj@qq.com>"]
-license = "GPL-3.0"
+authors = [
+    { name = "LTFan", email = "xfqwdsj@qq.com" },
+]
+dependencies = [
+    "numpy>=1.26.3",
+    "opencv-python>=4.9.0.80",
+    "tensorflow[and-cuda]>=2.14.1",
+    "tensorflow-io-gcs-filesystem>=0.35.0",
+    "deepface>=0.0.80",
+    "ultralytics>=8.0.236",
+]
+requires-python = ">=3.10,<3.11"
 readme = "README.md"
-
-[tool.poetry.dependencies]
-python = "^3.11"
-opencv-contrib-python = "^4.8.0.76"
+license = { text = "GPL-3-or-later" }
 
 
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+[tool.pdm]
+package-type = "application"

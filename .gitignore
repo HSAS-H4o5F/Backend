@@ -4,3 +4,5 @@ logs
 build
 res/schema
 **/__pycache__
+.venv
+.pdm-python

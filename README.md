@@ -15,9 +15,9 @@
 从 [Python 下载页](https://www.python.org/downloads/)
 或安装 [Anaconda](https://www.anaconda.com/download/)。
 
-### 安装 Poetry
+### 安装 PDM
 
-参考 [Poetry 官网](https://python-poetry.org/docs/#installation)。
+参考 [PDM 官网](https://pdm-project.org/latest/#installation)。
 
 ### 安装 npm 依赖
 
@@ -25,15 +25,15 @@
 npm install
 ```
 
-### 安装 Poetry 依赖
+### 安装 PDM 依赖
 
 ```shell
-poetry install
+pdm install
 ```
 
 ### 运行
 
 ```shell
-poetry shell
+eval $(pdm venv activate)
 npm start
 ```
