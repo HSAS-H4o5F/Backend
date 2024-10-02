@@ -11,7 +11,7 @@
     "parse-dashboard": "^5.4.0",
     "parse-server": "^7.2.0",
     "python-shell": "^5.0.0",
-    "socket.io": "^4.7.5",
+    "socket.io": "^4.8.0",
     "typescript": "^5.6.2",
     "typescript-json-schema": "^0.65.1"
   },
