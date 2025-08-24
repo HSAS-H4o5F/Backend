@@ -9,7 +9,7 @@
     "fast-xml-parser": "^5.2.5",
     "node-html-parser": "^7.0.1",
     "parse-dashboard": "^7.3.0",
-    "parse-server": "^8.2.2",
+    "parse-server": "^8.2.3",
     "python-shell": "^5.0.0",
     "socket.io": "^4.8.1",
     "typescript": "^5.8.3",
