@@ -17,7 +17,7 @@
   },
   "devDependencies": {
     "@types/accept-language-parser": "^1.5.8",
-    "@types/cors": "^2.8.17"
+    "@types/cors": "^2.8.19"
   },
   "scripts": {
     "start": "npx tsc && node ./build/app.js"
